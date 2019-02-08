@@ -1,6 +1,6 @@
 #include <iostream>
 #include <dlfcn.h>
-
+#include <fstream>
 using namespace std;
 
 typedef struct{
@@ -48,15 +48,16 @@ class Checker_Audio
                 std::cout<<"Check failed!";
                 return -3;
             }
-            else return 0;
+            std::cout<<"\n\n\n>>>>>>>CHECK PSSSED!!!!!!!!!!!\n";
+            return 0;
 
 		}
 
 		Checker_Audio()
 		{
 			this -> session = (Session*)malloc(sizeof(Session));
-			std::cout<<"Loads "<<sizeof(Session)<<"  mamory\n";
-			this -> handle = dlopen("./libcv.so", RTLD_LAZY);
+			std::cout<<"Loads "<<sizeof(Session)<<"  memory\n";
+			this -> handle = dlopen("./libsqc.so", RTLD_LAZY);
 			ResultCreating=0;
 			if (handle == NULL)
 			{
@@ -68,8 +69,13 @@ class Checker_Audio
     private:
         ContentInfo * loadContent(char * filename){
             ContentInfo * ci=new ContentInfo;
-            read_file_content(filename, &ci ->content, &ci->sizecontent);
-            return ci;
+            if ( read_file_content(filename, &ci ->content, &ci->sizecontent)){
+                std::cout<<"nice readed file";
+                return ci;
+            }
+            std::cout<<"bad readed file";
+            return NULL;
+
         }
         void initSession(){
             Session * session = (Session*)malloc(sizeof(Session));
@@ -104,10 +110,20 @@ class Checker_Audio
 
 };
 
+void foreach(char * filename, Checker_Audio * cau){
+    std::ifstream ifs(filename);
+    std::string line;
+    while(std::getline(ifs, line))
+        cau ->checkFile(line.c_str());
+}
+
+
 int main(int argc, char *argv[])
 {
 	Checker_Audio * checker = new Checker_Audio();
 	std::cout<<checker->checkFile("./tested.wav");
-	for (int i=1; i<argc; i++)
-        std::cout<< checker->checkFile(argv[i]);
+	//for (int i=1; i<argc; i++)
+    //    std::cout<< checker->checkFile(argv[i]);
+    if (argc>1)
+        foreach(argv[1], checker);
 }
