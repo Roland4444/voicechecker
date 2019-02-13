@@ -34,23 +34,23 @@ class Checker_Audio
 		int ResultCreating;
 		void * handle;
         char * config = "./cv_configuration.json";
-		int checkFile(char * filename){
+
+		int checkFile(char * filename)
+		{
 		    std::cout<<"\n\nchecking =>"<<filename<<endl;
 		    ContentInfo * ci;
 			if (loadContent(filename) == NULL)
-                return -1;
-            ci = loadContent(filename);
+                	return -1;
+            	    ci = loadContent(filename);
             BKKCheck v_check = (BKKCheck)(dlsym(handle,"v_check"));
             if (!v_check)
-                return -2;
-
+              	return -2;
             if (!v_check(this->session, ci ->content, ci ->sizecontent)){
                 std::cout<<"Check failed!";
                 return -3;
             }
             std::cout<<"\n\n\n>>>>>>>CHECK PSSSED!!!!!!!!!!!\n";
             return 0;
-
 		}
 
 		Checker_Audio()
@@ -66,8 +66,10 @@ class Checker_Audio
 			}
 			initSession();
 		};
+
     private:
-        ContentInfo * loadContent(char * filename){
+        ContentInfo * loadContent(char * filename)
+        {
             ContentInfo * ci=new ContentInfo;
             if ( read_file_content(filename, &ci ->content, &ci->sizecontent)){
                 std::cout<<"nice readed file";
@@ -77,7 +79,9 @@ class Checker_Audio
             return NULL;
 
         }
-        void initSession(){
+
+        void initSession()
+        {
             Session * session = (Session*)malloc(sizeof(Session));
             v_create_session load = (v_create_session)(dlsym(this->handle, "v_create_session"));
             if (!load){
@@ -93,7 +97,9 @@ class Checker_Audio
             std::cout<<"Session creates succesfully";
             this->session=session;
         }
-        bool read_file_content(const char *file_path, uint8_t **content, size_t *content_size) {
+
+        bool read_file_content(const char *file_path, uint8_t **content, size_t *content_size)
+        {
             FILE *fd = fopen(file_path, "rb");
             if (fd == NULL) {
                 fprintf(stderr, "file \"%s\" not found\n", file_path);
@@ -110,7 +116,8 @@ class Checker_Audio
 
 };
 
-void foreach(char * filename, Checker_Audio * cau){
+void foreach(char * filename, Checker_Audio * cau)
+{
     std::ifstream ifs(filename);
     std::string line;
     while(std::getline(ifs, line))
@@ -120,7 +127,7 @@ void foreach(char * filename, Checker_Audio * cau){
 
 int main(int argc, char *argv[])
 {
-	Checker_Audio * checker = new Checker_Audio();
+	auto checker = new Checker_Audio();
 	std::cout<<checker->checkFile("./tested.wav");
 	//for (int i=1; i<argc; i++)
     //    std::cout<< checker->checkFile(argv[i]);
